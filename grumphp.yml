@@ -1,0 +1,29 @@
+
+################################################################################
+#
+#  Copyright (C) BadPixxel <www.badpixxel.com>
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+#  For the full copyright and license information, please view the LICENSE
+#  file that was distributed with this source code.
+#
+################################################################################
+
+#############################################
+# Override Config. for Php Core Module
+parameters:
+
+    exclude:            ["vendor", "docker", "var", "docs", "bin", "node_modules"]
+
+    # For Building Splash Module
+    mod-enable:     false
+    # For Building Documentation
+    doc-enable:     false
+
+#############################################
+# Import Config. from Php Core Module
+imports:
+    - "./vendor/badpixxel/php-sdk/grumphp/generic.yml"

@@ -1,0 +1,6 @@
+/bin/
+!/bin/console
+
+/var/
+/.php-cs-fixer.cache
+/composer.lock

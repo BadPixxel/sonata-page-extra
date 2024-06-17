@@ -1,0 +1,78 @@
+{
+    "name":                 "badpixxel/sonata-pages-extra",
+    "description":          "Sonata Project - Page Extra features",
+    "type":                 "package",
+    "license":              "MIT",
+    "minimum-stability":    "dev",
+    "prefer-stable":        true,
+
+    "authors": [
+        {
+            "name": "BadPixxel",
+            "email": "eshop.bpaquier@gmail.com"
+        }
+    ],
+
+    "autoload": {
+        "psr-4": {
+            "BadPixxel\\SonataPageExtra\\": "./src/"
+        }
+    },
+
+    "autoload-dev": {
+        "psr-4": {
+            "BadPixxel\\SonataPageExtra\\Tests\\": "./tests/"
+        }
+    },
+
+    "require": {
+        "php":                                          "^8.1",
+
+        "symfony/http-kernel":                          "^5.4",
+        "webmozart/assert":                             "^1.10"
+    },
+
+    "require-dev": {
+        "badpixxel/php-sdk":                            "dev-main",
+
+        "symfony/runtime":                              "^5.4",
+
+        "sonata-project/admin-bundle":                  "^4.0",
+        "sonata-project/translation-bundle":            ">=2.0",
+        "sonata-project/page-bundle":                   "^4.0",
+        "sonata-project/media-bundle":                  "^4.0",
+        "sonata-project/formatter-bundle":              "^5.0",
+        "sonata-project/intl-bundle":                   "~2.0",
+        "sonata-project/user-bundle":                   "~5.0"
+    },
+
+    "scripts": {
+        "auto-scripts": [
+            "php bin/console cache:clear",
+            "bin/console assets:install --symlink",
+            "find var/cache/dev/*.xml | while read -r i; do cp -Rf \"$i\" var/cache/dev/testContainer.xml; done"
+        ],
+        "post-install-cmd": [
+            "@auto-scripts"
+        ],
+        "post-update-cmd": [
+            "@auto-scripts"
+        ]
+    },
+
+    "config": {
+        "allow-plugins": {
+            "phpro/grumphp":                        true,
+            "symfony/runtime":                      true,
+            "php-http/discovery":                   true
+        }
+    },
+
+    "extra": {
+        "symfony-tests-dir":                        "tests",
+        "symfony-assets-install":                   "symlink",
+        "runtime": {
+            "class": "Sonata\\PageBundle\\Runtime\\SonataPagePathRuntime"
+        }
+    }
+}
