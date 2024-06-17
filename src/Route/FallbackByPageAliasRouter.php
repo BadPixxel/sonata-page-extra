@@ -40,6 +40,6 @@ final class FallbackByPageAliasRouter extends AbstractExtraPageRouter
         // Check if Page is Found on Default Website
         $page = $this->cmsManager->getPageByPageAlias($dfSite, $name);
 
-        return $this->cmsRouter->generate($page, $parameters, $referenceType);
+        return $this->cmsRouter->generate($page, $parameters, self::ABSOLUTE_URL);
     }
 }
