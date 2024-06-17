@@ -1,0 +1,20 @@
+
+############################################################################
+# Sonata Admin Extra Extensions
+############################################################################
+
+services:
+    _defaults:
+        autowire:         true
+        autoconfigure:    true
+
+
+    ############################################################################
+    # Sonata Seo Aware Page Admin Extension
+    BadPixxel\SonataPageExtra\Admin\Extensions\SeoAwarePageAdminExtension:
+        tags:
+            - {
+                name: sonata.admin.extension,
+                target: sonata.page.admin.page,
+            }
+

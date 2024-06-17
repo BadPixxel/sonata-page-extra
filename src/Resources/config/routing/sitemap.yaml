@@ -1,0 +1,4 @@
+
+badpixxel_sonata_extras_sitemap:
+    path:         /sitemap.xml
+    controller:   BadPixxel\SonataPageExtra\Actions\Sitemap

@@ -1,0 +1,6 @@
+
+admin:
+    page:
+        indexed:
+            label:    "Indexed"
+            help:     "This page should be indexed by crawlers & robots"

@@ -1,0 +1,40 @@
+services:
+
+    _defaults:
+        autowire:   true
+        autoconfigure: true
+
+    ################################################################################
+    # AutoWire for Actions
+    BadPixxel\SonataPageExtra\Actions\:
+        resource:   '../../Actions'
+
+    ################################################################################
+    # AutoWire for Commands
+    BadPixxel\SonataPageExtra\Command\:
+        resource:   '../../Command'
+
+    ################################################################################
+    # AutoWire for Sonata Page Services
+    BadPixxel\SonataPageExtra\Page\:
+        resource:   '../../Page'
+
+    ################################################################################
+    # AutoWire for Sonata Page Routers
+    BadPixxel\SonataPageExtra\Route\:
+        resource:   '../../Route'
+
+    ################################################################################
+    # AutoWire for Sonata Top Level Services
+    BadPixxel\SonataPageExtra\Services\:
+        resource:   '../../Services'
+
+    ################################################################################
+    # AutoWire for Sonata Sitemaps Iterators
+    BadPixxel\SonataPageExtra\Sitemaps\:
+        resource:   '../../Sitemaps'
+
+    ################################################################################
+    # AutoWire for Twig Extensions
+    BadPixxel\SonataPageExtra\Twig\:
+        resource:   '../../Twig'
