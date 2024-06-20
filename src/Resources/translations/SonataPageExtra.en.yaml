@@ -4,3 +4,13 @@ admin:
         indexed:
             label:    "Indexed"
             help:     "This page should be indexed by crawlers & robots"
+
+        metaExtra:
+            label:      "Page Additional Metadata"
+            help:       "Register extra Metadata for Page Seo"
+            type:
+                label: "Metadata Type"
+            name:
+                label: "Name"
+            value:
+                label: "Value"

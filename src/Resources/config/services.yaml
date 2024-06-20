@@ -15,6 +15,11 @@ services:
         resource:   '../../Command'
 
     ################################################################################
+    # AutoWire for Configurators
+    BadPixxel\SonataPageExtra\Configuration\:
+        resource:   '../../Configuration'
+
+    ################################################################################
     # AutoWire for Sonata Page Services
     BadPixxel\SonataPageExtra\Page\:
         resource:   '../../Page'

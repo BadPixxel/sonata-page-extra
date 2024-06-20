@@ -28,6 +28,12 @@ trait SeoAwarePageTrait
     protected bool $indexed;
 
     /**
+     * @var null|array
+     */
+    #[ORM\Column(type: Types::JSON, nullable: true)]
+    private ?array $metaExtras = array();
+
+    /**
      * @inheritdoc
      */
     public function isIndexed(): bool
@@ -41,6 +47,24 @@ trait SeoAwarePageTrait
     public function setIndexed(bool $indexed): static
     {
         $this->indexed = $indexed;
+
+        return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getMetaExtra(): array
+    {
+        return $this->metaExtras ?? array();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setMetaExtra(array $metadata): static
+    {
+        $this->metaExtras = $metadata;
 
         return $this;
     }

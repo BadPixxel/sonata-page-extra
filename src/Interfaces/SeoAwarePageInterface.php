@@ -31,4 +31,18 @@ interface SeoAwarePageInterface
      * Set Page as Indexed
      */
     public function setIndexed(bool $indexed): static;
+
+    //==============================================================================
+    // EXTRA METADATA
+    //==============================================================================
+
+    /**
+     * Get Page Extra Metadata
+     */
+    public function getMetaExtra(): array;
+
+    /**
+     * Set Page Extra Metadata
+     */
+    public function setMetaExtra(array $metadata): static;
 }

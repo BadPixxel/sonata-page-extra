@@ -13,10 +13,12 @@
 
 namespace BadPixxel\SonataPageExtra\Admin\Extensions;
 
+use BadPixxel\SonataPageExtra\Form\Type\SeoMetadataType;
 use BadPixxel\SonataPageExtra\Interfaces\SeoAwarePageInterface;
 use Sonata\AdminBundle\Admin\AbstractAdminExtension;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
+use Sonata\AdminBundle\Form\Type\CollectionType;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Sonata\PageBundle\Model\PageInterface;
 
@@ -59,7 +61,7 @@ class SeoAwarePageAdminExtension extends AbstractAdminExtension
         // Add Indexed Status Flag
         $show
             ->end()
-            ->with('seo', array('label' => "SEO Parameters"))
+            ->with('seo_advanced', array('label' => "Advanced SEO Parameters"))
             ->add('indexed', null, array(
                 'label' => "admin.page.indexed.label",
                 'help' => "admin.page.indexed.help",
@@ -84,12 +86,27 @@ class SeoAwarePageAdminExtension extends AbstractAdminExtension
         // Add Indexed Status Flag
         $form
             ->end()
-            ->with('seo', array('label' => "SEO Parameters"))
+            ->with('seo_advanced', array(
+                'label' => "Advanced SEO Parameters",
+                'class' => "col-md-6"
+            ))
             ->add('indexed', null, array(
                 'label' => "Indexed",
                 'help' => "admin.page.indexed.help",
                 'translation_domain' => 'SonataPageExtra',
             ))
+            ->add(
+                'metaExtra',
+                CollectionType::class,
+                array(
+                    'label' => "Page Additional Metadata",
+                    'help' => "admin.page.metaExtra.help",
+                    'allow_add' => true,
+                    'allow_delete' => true,
+                    'entry_type' => SeoMetadataType::class,
+                    'translation_domain' => 'SonataPageExtra',
+                )
+            )
             ->end()
         ;
     }
