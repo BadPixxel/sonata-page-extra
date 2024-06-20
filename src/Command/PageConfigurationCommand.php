@@ -20,7 +20,9 @@ use BadPixxel\SonataPageExtra\Configuration\ConfigurationResolver;
 use BadPixxel\SonataPageExtra\Configuration\PageConfigurator;
 use BadPixxel\SonataPageExtra\Configuration\PageIdentifier;
 use BadPixxel\SonataPageExtra\Services\WebsiteManager;
-use Sonata\PageBundle\Model\PageInterface;
+use Exception;
+use Sonata\PageBundle\Model\PageInterface as Page;
+use Sonata\PageBundle\Model\SiteInterface as Site;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
@@ -74,22 +76,8 @@ class PageConfigurationCommand extends Command
                 // Walk on Defined Configurations
                 foreach ($configs as $key => $config) {
                     //==============================================================================
-                    // Identify Target Page
-                    Assert::notEmpty(
-                        $page = $this->identifier->identify($site, $key),
-                        "Unable to Identify Sonata Page to Configure"
-                    );
-                    //==============================================================================
                     // Apply Page Configuration
-                    if ($error = $this->configurePage($page, $config)) {
-                        $table->appendRow(
-                            array($site->getName(), $page->getId(), $page->getUrl(), "<error> KO </error>", $error)
-                        );
-                    } else {
-                        $table->appendRow(
-                            array($site->getName(), $page->getId(), $page->getUrl(), "<info> OK </info>")
-                        );
-                    }
+                    $this->configurePage($table, $site, $key, $config);
                 }
             }
         }
@@ -111,23 +99,61 @@ class PageConfigurationCommand extends Command
     }
 
     /**
-     * Apply Configuration to Page
+     * Apply Configuration to Website Sonata Page
      */
-    protected function configurePage(PageInterface $page, array $config): ?string
+    protected function configurePage(Table $table, Site $site, string $key, array $config): void
     {
+        $page = null;
+
         try {
             //==============================================================================
             // Resolve Page Configuration
-            $resolved = $this->resolver->resolve($page, $config);
+            $resolved = $this->resolver->resolve($site, $config);
+            //==============================================================================
+            // Skip Page Configuration
+            if (empty($resolved)) {
+                //==============================================================================
+                // Add Table Result
+                $this->appendResult($table, $site, null);
+
+                return;
+            }
+            //==============================================================================
+            // Identify Target Page
+            Assert::notEmpty(
+                $page = $this->identifier->identify($site, $key),
+                "Unable to Identify Sonata Page to Configure"
+            );
             //==============================================================================
             // Update Page Configuration
-            if ($resolved) {
-                $this->configurator->configure($page, $resolved);
-            }
-        } catch (\Exception $e) {
-            return $e->getMessage();
+            $this->configurator->configure($page, $resolved);
+            //==============================================================================
+            // Add Table Result
+            $this->appendResult($table, $site, $page);
+        } catch (Exception $e) {
+            //==============================================================================
+            // Add Table Result
+            $this->appendResult($table, $site, $page, $e->getMessage());
         }
+    }
 
-        return null;
+    /**
+     * Apply Configuration to Page
+     */
+    protected function appendResult(Table $table, Site $site, ?Page $page, ?string $error = null): void
+    {
+        if (!$page) {
+            $table->appendRow(
+                array($site->getName(), $error, "N/A", "<comment>SKIP</comment>", "Empty or Excluded")
+            );
+        } elseif ($error) {
+            $table->appendRow(
+                array($site->getName(), $page->getId(), $page->getUrl(), "<error> KO </error>", $error)
+            );
+        } else {
+            $table->appendRow(
+                array($site->getName(), $page->getId(), $page->getUrl(), "<info> OK </info>")
+            );
+        }
     }
 }

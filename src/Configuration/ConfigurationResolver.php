@@ -14,7 +14,7 @@
 namespace BadPixxel\SonataPageExtra\Configuration;
 
 use Exception;
-use Sonata\PageBundle\Model\PageInterface;
+use Sonata\PageBundle\Model\SiteInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Translation\MessageCatalogueInterface;
 use Symfony\Component\Translation\TranslatorBagInterface;
@@ -56,7 +56,7 @@ class ConfigurationResolver
      *
      * @throws Exception
      */
-    public function resolve(PageInterface $page, array $configuration): ?array
+    public function resolve(SiteInterface $site, array $configuration): ?array
     {
         //==============================================================================
         // Ensure resolver Init
@@ -67,19 +67,18 @@ class ConfigurationResolver
         //==============================================================================
         // Autoload config from Translations
         if ($mainConfig["autoload"]) {
-            $mainConfig = $this->autoloadFromTranslations($page, $mainConfig);
+            $mainConfig = $this->autoloadFromTranslations($site, $mainConfig);
         }
         //==============================================================================
         // Resolve Configuration for Website
-        $site = $page->getSite();
-        if ($site && ($siteConfiguration = $configuration['sites'][$site->getName()] ?? null)) {
+        if ($siteConfiguration = $configuration['sites'][$site->getName()] ?? null) {
             //==============================================================================
             // Resolve Main Configuration
             $siteConfig = $this->resolver->resolve($siteConfiguration);
             //==============================================================================
             // Autoload config from Translations
             if ($siteConfig["autoload"]) {
-                $siteConfig = $this->autoloadFromTranslations($page, $siteConfig);
+                $siteConfig = $this->autoloadFromTranslations($site, $siteConfig);
             }
         }
         //==============================================================================
@@ -89,8 +88,13 @@ class ConfigurationResolver
             array_filter($siteConfig ?? array())
         );
         //==============================================================================
+        // Page is Excluded
+        if ($finalConfig['excluded'] ?? false) {
+            return null;
+        }
+        //==============================================================================
         // Resolve Page Parent
-        if ($site && $finalConfig['parent']) {
+        if ($finalConfig['parent']) {
             $finalConfig['parent'] = $this->identifier->identify($site, $finalConfig['parent']);
         }
 
@@ -101,11 +105,10 @@ class ConfigurationResolver
     // PRIVATE METHODS
     //==============================================================================
 
-    public function autoloadFromTranslations(PageInterface $page, array $config): array
+    public function autoloadFromTranslations(SiteInterface $site, array $config): array
     {
         Assert::string($config["autoload"]);
         Assert::string($domain = $config["translation_domain"]);
-        Assert::notEmpty($site = $page->getSite());
         Assert::notEmpty($locale = $site->getLocale());
         //====================================================================//
         // Get Translator Catalogue
@@ -155,6 +158,7 @@ class ConfigurationResolver
         $resolver
             ->setDefaults(array(
                 "autoload" => null,
+                "excluded" => false,
 
                 "enabled" => null,
                 "name" => null,
@@ -177,6 +181,7 @@ class ConfigurationResolver
                 "sites" => array(),
             ))
             ->addAllowedTypes("autoload", array('null', 'string'))
+            ->addAllowedTypes("excluded", 'bool')
 
             ->addAllowedTypes("enabled", array('null', 'boolean'))
             ->addAllowedTypes("name", array('null', 'string'))
