@@ -17,6 +17,7 @@ use BadPixxel\SonataPageExtra\Helpers\RequestParser;
 use Sonata\PageBundle\CmsManager\CmsManagerInterface;
 use Sonata\PageBundle\Model\PageInterface;
 use Sonata\PageBundle\Model\SiteInterface;
+use Sonata\SeoBundle\Seo\SeoPageInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -33,7 +34,8 @@ class LocalesManager
      */
     public function __construct(
         private readonly WebsiteManager    $hostsManager,
-        private readonly CmsManagerInterface $cmsPageManager
+        private readonly CmsManagerInterface $cmsPageManager,
+        private readonly ?SeoPageInterface $seoPage = null,
     ) {
     }
 
@@ -69,16 +71,22 @@ class LocalesManager
     /**
      * Get Lang Alternates for a Page.
      */
-    public function getLocaleAlternates(Request $request): array
+    public function getLocaleAlternates(Request $request, PageInterface $page = null): array
     {
         //==============================================================================
+        // Load Lang Alternates Already in Seo Page
+        $seoLangAlternates = $this->seoPage?->getLangAlternates() ?? array();
+        //==============================================================================
         // Safety Check
-        if (!$page = $this->cmsPageManager->getCurrentPage()) {
+        if (!$page ??= $this->cmsPageManager->getCurrentPage()) {
             $langAlternates = array();
             foreach ($this->getAllWebsites() as $locale => $site) {
                 //==============================================================================
+                // Get Url from Seo Page Configuration
+                $localeUrl = array_search($locale, $seoLangAlternates, true) ?: null;
+                //==============================================================================
                 // Generate Localized Site Url
-                $localeUrl = sprintf(
+                $localeUrl ??= sprintf(
                     "%s://%s%s",
                     $request->getScheme(),
                     $site->getHost(),
@@ -93,13 +101,17 @@ class LocalesManager
 
             return $langAlternates;
         }
+
         //==============================================================================
         // Lang Alternates Already Configured
         $langAlternates = array();
         foreach ($this->getAllWebsites() as $locale => $site) {
             //==============================================================================
+            // Get Url from Seo Page Configuration
+            $localeUrl = array_search($locale, $seoLangAlternates, true) ?: null;
+            //==============================================================================
             // Generate Localized Site Url
-            $localeUrl = $this->getUrlForWebsite($site, $page, $request);
+            $localeUrl ??= $this->getUrlForWebsite($site, $page, $request);
             //==============================================================================
             // Add Localized Site Url if no Exists
             if (!isset($langAlternates[$locale])) {
