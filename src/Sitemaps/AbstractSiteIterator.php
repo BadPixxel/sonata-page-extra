@@ -29,6 +29,8 @@ use Webmozart\Assert\Assert;
  */
 abstract class AbstractSiteIterator extends \AppendIterator implements Iterator
 {
+    private ?array $sites = null;
+
     /**
      * @param SitemapPageConfiguratorInterface[] $pageIterators
      */
@@ -42,9 +44,6 @@ abstract class AbstractSiteIterator extends \AppendIterator implements Iterator
         private readonly RouterInterface      $router,
     ) {
         parent::__construct();
-        foreach ($this->getSites() as $site) {
-            $this->append($this->getSiteIterator($site));
-        }
     }
 
     /**
@@ -84,5 +83,20 @@ abstract class AbstractSiteIterator extends \AppendIterator implements Iterator
         Assert::isArray($current = parent::current());
 
         return $this->sourceBuilder->build($current);
+    }
+
+    /**
+     * Ensure Init of the Iterator on first Request
+     */
+    public function valid(): bool
+    {
+        if (!isset($this->sites)) {
+            $this->sites = $this->getSites();
+            foreach ($this->sites as $site) {
+                $this->append($this->getSiteIterator($site));
+            }
+        }
+
+        return parent::valid();
     }
 }

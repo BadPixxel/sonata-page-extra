@@ -19,9 +19,11 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\FormatterHelper;
 use Symfony\Component\Console\Helper\Table;
-use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Process\Process;
+use Webmozart\Assert\Assert;
 
 #[AsCommand(
     name: "sonata:page:generate:sitemaps",
@@ -33,7 +35,17 @@ class GenerateSitemapsCommand extends Command
         private readonly SitemapsPathBuilder $pathBuilder,
         private readonly WebsiteManager      $hostsManager,
     ) {
-        parent::__construct(null);
+        parent::__construct();
+    }
+
+    /**
+     * Configure Console Command
+     */
+    public function configure(): void
+    {
+        $this
+            ->addOption('scheme', null, InputOption::VALUE_OPTIONAL, 'Set the scheme', 'https')
+        ;
     }
 
     /**
@@ -44,7 +56,7 @@ class GenerateSitemapsCommand extends Command
         $this->renderHostsList($output);
 
         foreach (array_keys($this->hostsManager->getSitesGroups()) as $host) {
-            $this->generateHostSitemaps($host, $output);
+            $this->generateHostSitemaps($host, $input, $output);
         }
 
         return 0;
@@ -71,38 +83,50 @@ class GenerateSitemapsCommand extends Command
     /**
      * Render List of Websites grouped by Hosts
      */
-    protected function generateHostSitemaps(string $host, OutputInterface $output): void
+    protected function generateHostSitemaps(string $host, InputInterface $input, OutputInterface $output): void
     {
+        $scheme = $input->getOption('scheme');
+        Assert::string($scheme);
         //==============================================================================
         // Ensure Host Sitemap Storage path Exists
         $this->pathBuilder->ensureHostPathExists($host);
         //==============================================================================
         // Prepare Sub-Command Inputs
-        $sitemapInput = new ArrayInput(array(
-            // the command name is passed as first argument
+        $procInput = array(
+            // PHP Version to Use
+            'php' => getenv("PHP_CLI") ?: "php",
+            // Sf Command to Execute
+            'console' => 'bin/console',
             'command' => 'sonata:seo:sitemap',
+            // Relative Path to Sitemaps
             'dir' => $this->pathBuilder->getRelativePath($host),
-            '--sitemap_path' => "/maps/".$host,
+            // Host to Use
             'host' => $host,
-        ));
+            // Public Path to Sitemaps
+            'path' => "--sitemap_path=/maps/".$host,
+            // Public Path to Sitemaps
+            'scheme' => "--scheme=".$scheme,
+        );
         //==============================================================================
         // Prepare Formatter
         $formatter = $this->getHelper('formatter');
         \assert($formatter instanceof FormatterHelper);
         //==============================================================================
         // Execute Sub-Command
-        $application = $this->getApplication();
-        if ($application && $application->doRun($sitemapInput, $output)) {
-            $output->writeln($formatter->formatSection(
-                " KO ",
-                sprintf('Unable to sitemap for %s', $host),
-                'error'
-            ));
-        } else {
+        $process = new Process($procInput);
+        $process->run();
+        if ($process->isSuccessful()) {
             $output->writeln($formatter->formatSection(
                 " OK ",
                 sprintf('Sitemap generated for %s => %s', $host, $this->pathBuilder->getFinalRelativePath($host)),
                 'info'
+            ));
+        } else {
+            $output->writeln($process->getOutput());
+            $output->writeln($formatter->formatSection(
+                " KO ",
+                sprintf('Unable to sitemap for %s', $host),
+                'error'
             ));
         }
     }
