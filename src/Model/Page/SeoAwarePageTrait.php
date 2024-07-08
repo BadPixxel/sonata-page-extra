@@ -25,7 +25,7 @@ trait SeoAwarePageTrait
      * Mark this page for Indexing
      */
     #[ORM\Column(type: Types::BOOLEAN, options: array('default' => 1))]
-    protected bool $indexed;
+    protected bool $indexed = true;
 
     /**
      * @var null|array
