@@ -13,7 +13,9 @@
 
 namespace BadPixxel\SonataPageExtra\Entity;
 
+use BadPixxel\SonataPageExtra\Interfaces\RedirectionAwarePageInterface;
 use BadPixxel\SonataPageExtra\Interfaces\SeoAwarePageInterface;
+use BadPixxel\SonataPageExtra\Model\Page\RedirectionsAwarePageTrait;
 use BadPixxel\SonataPageExtra\Model\Page\SeoAwarePageTrait;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -21,12 +23,19 @@ use Sonata\PageBundle\Entity\BasePage;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'page__page')]
-class ExtendedPage extends BasePage implements SeoAwarePageInterface
+class ExtendedPage extends BasePage implements SeoAwarePageInterface, RedirectionAwarePageInterface
 {
     use SeoAwarePageTrait;
+    use RedirectionsAwarePageTrait;
 
     #[ORM\Id]
     #[ORM\Column(type: Types::INTEGER)]
     #[ORM\GeneratedValue]
     protected $id;
+
+    public function __construct()
+    {
+        $this->initRedirections();
+        parent::__construct();
+    }
 }
