@@ -176,6 +176,7 @@ class ConfigurationResolver
                 "metaExtras" => null,
 
                 "indexed" => null,
+                "redirections" => null,
 
                 "translation_domain" => "messages",
                 "sites" => array(),
@@ -199,6 +200,7 @@ class ConfigurationResolver
             ->addAllowedTypes("metaExtras", array('null', "array"))
 
             ->addAllowedTypes("indexed", array('null', 'boolean'))
+            ->addAllowedTypes("redirections", array('null', "array"))
 
             ->addAllowedTypes("translation_domain", 'string')
             ->addAllowedTypes("sites", "array")

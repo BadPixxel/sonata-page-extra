@@ -13,10 +13,15 @@
 
 namespace BadPixxel\SonataPageExtra\Configuration;
 
+use BadPixxel\SonataPageExtra\Dictionary\RedirectTypes;
+use BadPixxel\SonataPageExtra\Entity\ExtendedPage;
+use BadPixxel\SonataPageExtra\Entity\PageRedirection;
+use BadPixxel\SonataPageExtra\Interfaces\RedirectionAwarePageInterface;
 use BadPixxel\SonataPageExtra\Interfaces\SeoAwarePageInterface;
 use Sonata\PageBundle\Model\PageInterface;
 use Sonata\PageBundle\Model\PageManagerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
+use Symfony\Component\HttpFoundation\Response;
 use Webmozart\Assert\Assert;
 
 /**
@@ -40,6 +45,7 @@ class PageConfigurator
             ->setupPageGeneralOptions($page, $config)
             ->setupPageMetadata($page, $config)
             ->setupPageSeoOptions($page, $config)
+            ->setupPageRedirections($page, $config)
         ;
         //====================================================================//
         // Save Sonata Page
@@ -118,6 +124,55 @@ class PageConfigurator
             }
 
             $page->setMetaExtra($config['metaExtras']);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Set up a Page General Options.
+     */
+    private function setupPageRedirections(PageInterface $page, array $config): static
+    {
+        if (!$page instanceof RedirectionAwarePageInterface) {
+            return $this;
+        }
+        Assert::isInstanceOf($page, ExtendedPage::class);
+        //====================================================================//
+        // Get Configured Redirections
+        $redirections = $config['redirections'] ?? null;
+        if (!is_array($config['redirections'])) {
+            return $this;
+        }
+        //====================================================================//
+        // Walk on Redirections
+        $doneRedirections = array();
+        foreach ($redirections as $code => $uri) {
+            //====================================================================//
+            // Ensure Redirection Exists
+            if (!$redirection = $page->getRedirectionByUri($uri)) {
+                $redirection = new PageRedirection();
+                $redirection->setPage($page);
+                $page->addRedirection($redirection);
+            }
+            //====================================================================//
+            // Update Redirection Uri
+            $redirection->setUri($uri);
+            $doneRedirections[] = $uri;
+            //====================================================================//
+            // Update Redirection Code
+            if (in_array($code, RedirectTypes::ALL, true)) {
+                $redirection->setCode($code);
+            } else {
+                $redirection->setCode(Response::HTTP_MOVED_PERMANENTLY);
+            }
+        }
+        //====================================================================//
+        // Delete Extra Redirection
+        foreach ($page->getRedirections() as $redirection) {
+            if (!in_array($redirection->getUri(), $doneRedirections, true)) {
+                $page->removeRedirection($redirection);
+            }
         }
 
         return $this;

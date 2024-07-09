@@ -46,4 +46,9 @@ interface RedirectionAwarePageInterface
      * @return Collection<PageRedirection>
      */
     public function getRedirections(): Collection;
+
+    /**
+     * Get Page Redirection by Uri
+     */
+    public function getRedirectionByUri(string $uri): ?PageRedirection;
 }

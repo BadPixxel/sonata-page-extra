@@ -75,4 +75,18 @@ trait RedirectionsAwarePageTrait
 
         return $this;
     }
+
+    /**
+     * Get Page Redirection by Uri
+     */
+    public function getRedirectionByUri(string $uri): ?PageRedirection
+    {
+        foreach ($this->getRedirections() as $redirection) {
+            if ($redirection->getUri() === $uri) {
+                return $redirection;
+            }
+        }
+
+        return null;
+    }
 }

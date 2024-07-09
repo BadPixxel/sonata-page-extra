@@ -19,45 +19,42 @@ use Sonata\PageBundle\Model\SiteManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\RedirectController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Webmozart\Assert\Assert;
 
 /**
  * Sonata Website Redirections Controller
  * Extends Generic redirection Controller to Force Website Url
  */
-class WebsiteRedirectAction extends RedirectController
+class WebsiteRedirectAction
 {
     public function __construct(
         private readonly SiteManagerInterface $siteManager,
         private readonly WebsiteSwitcher $websiteSwitcher,
-        ?UrlGeneratorInterface $router = null,
-        ?int $httpPort = null,
-        ?int $httpsPort = null
+        private readonly RedirectController $redirectController,
     ) {
-        parent::__construct($router, $httpPort, $httpsPort);
     }
 
     public function __invoke(Request $request): Response
     {
         //==============================================================================
         // Get Route Parameters
-        $p = $request->attributes->get('_route_params', array());
-        Assert::keyExists($p, 'site');
+        $routeParams = $request->attributes->get('_route_params', array());
+        Assert::isArray($routeParams);
+        Assert::keyExists($routeParams, 'site');
         //==============================================================================
         // Find Target Website
-        $site = $this->siteManager->find($p['site']);
+        $site = $this->siteManager->find($routeParams['site']);
         Assert::isInstanceOf($site, SiteInterface::class);
         //==============================================================================
         // Switch Router this Website
         $this->websiteSwitcher->switchTo($site);
         //==============================================================================
         // Remove Site option from Parameters
-        unset($p['site']);
-        $request->attributes->set('_route_params', $p);
+        unset($routeParams['site']);
+        $request->attributes->set('_route_params', $routeParams);
         //==============================================================================
         // Generate Redirect Response
-        $response = parent::__invoke($request);
+        $response = $this->redirectController->__invoke($request);
         //==============================================================================
         // Reset Router top Current Website
         $this->websiteSwitcher->switchTo($site);
