@@ -1,0 +1,11 @@
+
+
+################################################################################
+# Sitemap
+__badpixxel_sonata_extras_sitemaps:
+    resource: "@BadPixxelSonataPageExtrasBundle/Resources/config/routing/sitemap.yaml"
+
+################################################################################
+# Redirections
+__badpixxel_sonata_extras_redirections:
+    resource: "@BadPixxelSonataPageExtrasBundle/Resources/config/routing/redirections.yaml"

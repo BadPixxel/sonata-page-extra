@@ -1,0 +1,4 @@
+
+badpixxel_sonata_extras_redirections:
+  resource:   BadPixxel\SonataPageExtra\Route\RedirectRoutesLoader
+  type:       service

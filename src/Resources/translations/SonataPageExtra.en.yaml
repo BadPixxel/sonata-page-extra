@@ -14,3 +14,11 @@ admin:
                 label: "Name"
             value:
                 label: "Value"
+
+        redirection:
+            label:      "Uri Redirections"
+            help:       "Uri that should redirect to this page"
+            uri:
+                label: "Uri/Url"
+            type:
+                label: "Redirection Type"

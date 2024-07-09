@@ -8,6 +8,7 @@ services:
     # AutoWire for Actions
     BadPixxel\SonataPageExtra\Actions\:
         resource:   '../../Actions'
+        tags:       ["controller.service_arguments"]
 
     ################################################################################
     # AutoWire for Commands

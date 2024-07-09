@@ -18,3 +18,22 @@ services:
                 target: sonata.page.admin.page,
             }
 
+    ############################################################################
+    # Sonata Redirection Aware Page Admin Extension
+    BadPixxel\SonataPageExtra\Admin\Extensions\RedirectionAwarePageAdminExtension:
+        tags:
+            - {
+                name: sonata.admin.extension,
+                target: sonata.page.admin.page,
+            }
+
+    ############################################################################
+    # Posts Redirections Admin
+    BadPixxel\SonataPageExtra\Admin\PageRedirectionAdmin:
+        tags:
+            - {
+                name:               sonata.admin,
+                manager_type:       orm,
+#                show_in_dashboard:  false,
+                model_class:        BadPixxel\SonataPageExtra\Entity\PageRedirection
+            }
