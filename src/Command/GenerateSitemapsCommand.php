@@ -82,6 +82,8 @@ class GenerateSitemapsCommand extends Command
 
     /**
      * Render List of Websites grouped by Hosts
+     *
+     * @SuppressWarnings(PHPMD.Superglobals)
      */
     protected function generateHostSitemaps(string $host, InputInterface $input, OutputInterface $output): void
     {
@@ -94,7 +96,7 @@ class GenerateSitemapsCommand extends Command
         // Prepare Sub-Command Inputs
         $procInput = array(
             // PHP Version to Use
-            'php' => getenv("PHP_CLI") ?: "php",
+            'php' => $_ENV['PHP_CLI'] ?? "php",
             // Sf Command to Execute
             'console' => 'bin/console',
             'command' => 'sonata:seo:sitemap',
@@ -123,6 +125,7 @@ class GenerateSitemapsCommand extends Command
             ));
         } else {
             $output->writeln($process->getOutput());
+            $output->writeln($process->getErrorOutput());
             $output->writeln($formatter->formatSection(
                 " KO ",
                 sprintf('Unable to sitemap for %s', $host),
