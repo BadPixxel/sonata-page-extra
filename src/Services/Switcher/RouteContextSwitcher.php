@@ -43,7 +43,7 @@ class RouteContextSwitcher
         //==============================================================================
         // Backup Initial Context
         $context = $this->router->getContext();
-        $this->currentContext = clone $context;
+        $this->currentContext = $context;
         //==============================================================================
         // Force Context
         if ($context instanceof SiteRequestContextInterface) {

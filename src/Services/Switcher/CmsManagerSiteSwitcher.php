@@ -17,6 +17,7 @@ use ReflectionClass;
 use ReflectionException;
 use ReflectionProperty;
 use Sonata\PageBundle\CmsManager\CmsManagerInterface;
+use Sonata\PageBundle\CmsManager\CmsManagerSelectorInterface;
 use Sonata\PageBundle\Model\SiteInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Webmozart\Assert\Assert;
@@ -25,7 +26,7 @@ use Webmozart\Assert\Assert;
  * Enable Using Sonata Page Manager with Different Site/Hosts Contexts
  */
 #[Autoconfigure(bind: array(
-    '$cmsPageManager' => "@sonata.page.cms.page",
+    '$cmsPageManagerSelector' => "@sonata.page.cms_manager_selector",
 ))]
 class CmsManagerSiteSwitcher
 {
@@ -50,7 +51,7 @@ class CmsManagerSiteSwitcher
     private array $pageReferences = array();
 
     public function __construct(
-        private readonly CmsManagerInterface $cmsPageManager
+        private readonly CmsManagerSelectorInterface $cmsPageManagerSelector
     ) {
     }
 
@@ -75,7 +76,7 @@ class CmsManagerSiteSwitcher
         //====================================================================//
         // Store Default Cms Manager Page References Cache
         if ($this->defaultSite) {
-            Assert::isArray($pageReferences = $property->getValue($this->cmsPageManager));
+            Assert::isArray($pageReferences = $property->getValue($this->getManager()));
             $this->pageReferences[$this->defaultSite->getId()] = $pageReferences;
         }
         //====================================================================//
@@ -89,7 +90,7 @@ class CmsManagerSiteSwitcher
         //====================================================================//
         // Replace Cms Manager Page References for Website
         $this->currentSite = $site;
-        $property->setValue($this->cmsPageManager, $this->pageReferences[$site->getId()]);
+        $property->setValue($this->getManager(), $this->pageReferences[$site->getId()]);
     }
 
     /**
@@ -106,12 +107,12 @@ class CmsManagerSiteSwitcher
         Assert::keyExists($this->pageReferences, (string) $this->currentSite->getId(), "Current site doesn't exist.");
         //====================================================================//
         // Store Current Cms Manager Page References Cache
-        Assert::isArray($pageReferences = $property->getValue($this->cmsPageManager));
+        Assert::isArray($pageReferences = $property->getValue($this->getManager()));
         $this->pageReferences[$this->currentSite->getId()] = $pageReferences;
         //====================================================================//
         // Reset Cms Manager Page References for Website
         if ($this->defaultSite) {
-            $property->setValue($this->cmsPageManager, $this->pageReferences[$this->defaultSite->getId()]);
+            $property->setValue($this->getManager(), $this->pageReferences[$this->defaultSite->getId()]);
         }
         $this->currentSite = null;
     }
@@ -119,11 +120,19 @@ class CmsManagerSiteSwitcher
     /**
      * Get Site Selector Site Reflexion Property
      */
-    public function getProperty(): ?ReflectionProperty
+    private function getManager(): CmsManagerInterface
+    {
+        return $this->cmsPageManagerSelector->retrieve();
+    }
+
+    /**
+     * Get Site Selector Site Reflexion Property
+     */
+    private function getProperty(): ?ReflectionProperty
     {
         if (!isset($this->property)) {
             try {
-                $reflexionClass = new ReflectionClass($this->cmsPageManager);
+                $reflexionClass = new ReflectionClass($this->getManager());
                 $this->property = $reflexionClass->getProperty("pageReferences");
                 $this->property->setAccessible(true);
             } catch (ReflectionException) {
