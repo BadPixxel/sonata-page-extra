@@ -15,6 +15,7 @@ namespace BadPixxel\SonataPageExtra\Route;
 
 use BadPixxel\SonataPageExtra\Entity\PageRedirection;
 use BadPixxel\SonataPageExtra\Helpers\RedirectRouteBuilder;
+use Doctrine\DBAL\Exception\ServerException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Routing\RouteLoaderInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
@@ -72,9 +73,13 @@ class RedirectRoutesLoader implements RouteLoaderInterface
      */
     private function getRedirections(): array
     {
-        $redirections = $this->entityManager->getRepository(PageRedirection::class)->findAll();
-        Assert::allIsInstanceOf($redirections, PageRedirection::class);
+        try {
+            $redirections = $this->entityManager->getRepository(PageRedirection::class)->findAll();
+            Assert::allIsInstanceOf($redirections, PageRedirection::class);
 
-        return $redirections;
+            return $redirections;
+        } catch (ServerException $e) {
+            return array();
+        }
     }
 }
