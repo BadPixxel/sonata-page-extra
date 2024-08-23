@@ -15,7 +15,6 @@ namespace BadPixxel\SonataPageExtra\Services\Switcher;
 
 use Sonata\PageBundle\Model\SiteInterface;
 use Sonata\PageBundle\Request\SiteRequestContextInterface;
-use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\RouterInterface;
 use Webmozart\Assert\Assert;
 
@@ -26,9 +25,14 @@ use Webmozart\Assert\Assert;
 class RouteContextSwitcher
 {
     /**
+     * Currently Used Request Context Host
+     */
+    private ?string $currentHost = null;
+
+    /**
      * Currently Used Website
      */
-    private ?RequestContext $currentContext = null;
+    private ?SiteInterface $currentSite = null;
 
     public function __construct(
         private readonly RouterInterface $router,
@@ -43,12 +47,13 @@ class RouteContextSwitcher
         //==============================================================================
         // Backup Initial Context
         $context = $this->router->getContext();
-        $this->currentContext = $context;
         //==============================================================================
         // Force Context
         if ($context instanceof SiteRequestContextInterface) {
+            $this->currentSite = $context->getSite();
             $context->setSite($site);
         } else {
+            $this->currentHost = $context->getHost();
             $context->setHost((string) $site->getHost());
         }
     }
@@ -58,10 +63,17 @@ class RouteContextSwitcher
      */
     public function reset(): void
     {
-        Assert::notEmpty($this->currentContext);
+        $context = $this->router->getContext();
         //====================================================================//
         // Reset Router Context
-        $this->router->setContext($this->currentContext);
-        $this->currentContext = null;
+        if ($context instanceof SiteRequestContextInterface) {
+            Assert::notEmpty($this->currentSite);
+            $context->setSite($this->currentSite);
+            $this->currentSite = null;
+        } else {
+            Assert::notEmpty($this->currentHost);
+            $context->setHost($this->currentHost);
+            $this->currentHost = null;
+        }
     }
 }
