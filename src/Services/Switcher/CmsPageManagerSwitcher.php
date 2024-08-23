@@ -16,8 +16,8 @@ namespace BadPixxel\SonataPageExtra\Services\Switcher;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionProperty;
+use Sonata\PageBundle\CmsManager\BaseCmsPageManager;
 use Sonata\PageBundle\CmsManager\CmsManagerInterface;
-use Sonata\PageBundle\CmsManager\CmsManagerSelectorInterface;
 use Sonata\PageBundle\Model\SiteInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Webmozart\Assert\Assert;
@@ -26,9 +26,9 @@ use Webmozart\Assert\Assert;
  * Enable Using Sonata Page Manager with Different Site/Hosts Contexts
  */
 #[Autoconfigure(bind: array(
-    '$cmsPageManagerSelector' => "@sonata.page.cms_manager_selector",
+    '$cmsPageManager' => "@sonata.page.cms.snapshot",
 ))]
-class CmsManagerSiteSwitcher
+class CmsPageManagerSwitcher
 {
     /**
      * Storage for Page References Reflexion Property
@@ -51,7 +51,7 @@ class CmsManagerSiteSwitcher
     private array $pageReferences = array();
 
     public function __construct(
-        private readonly CmsManagerSelectorInterface $cmsPageManagerSelector
+        private readonly BaseCmsPageManager $cmsPageManager
     ) {
     }
 
@@ -122,7 +122,7 @@ class CmsManagerSiteSwitcher
      */
     private function getManager(): CmsManagerInterface
     {
-        return $this->cmsPageManagerSelector->retrieve();
+        return $this->cmsPageManager;
     }
 
     /**

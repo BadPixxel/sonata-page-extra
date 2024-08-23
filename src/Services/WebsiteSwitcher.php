@@ -13,7 +13,6 @@
 
 namespace BadPixxel\SonataPageExtra\Services;
 
-use BadPixxel\SonataPageExtra\Services\Switcher\RouteContextSwitcher;
 use Sonata\PageBundle\Model\SiteInterface;
 
 /**
@@ -24,8 +23,9 @@ class WebsiteSwitcher
 {
     public function __construct(
         private readonly Switcher\SiteSelectorSwitcher   $siteSelectorSwitcher,
-        private readonly Switcher\CmsManagerSiteSwitcher $cmsManagerSiteSwitcher,
-        private readonly RouteContextSwitcher $routeContextSwitcher
+        private readonly Switcher\CmsPageManagerSwitcher $cmsManagerPageSwitcher,
+        private readonly Switcher\CmsSnapshotManagerSwitcher $cmsManagerSnapshotSwitcher,
+        private readonly Switcher\RouteContextSwitcher $routeContextSwitcher
     ) {
     }
 
@@ -39,7 +39,8 @@ class WebsiteSwitcher
         $currentSite = $this->siteSelectorSwitcher->switchTo($site);
         //====================================================================//
         // Change Cms Manager Page References for Website
-        $this->cmsManagerSiteSwitcher->setDefaultSite($currentSite)->switchTo($site);
+        $this->cmsManagerPageSwitcher->setDefaultSite($currentSite)->switchTo($site);
+        $this->cmsManagerSnapshotSwitcher->setDefaultSite($currentSite)->switchTo($site);
         //====================================================================//
         // Change Symfony Router Context
         $this->routeContextSwitcher->switchTo($site);
@@ -55,7 +56,8 @@ class WebsiteSwitcher
         $this->siteSelectorSwitcher->reset();
         //====================================================================//
         // Reset Cms Manager Page References for Website
-        $this->cmsManagerSiteSwitcher->reset();
+        $this->cmsManagerPageSwitcher->reset();
+        $this->cmsManagerSnapshotSwitcher->reset();
         //====================================================================//
         // Reset Symfony Router Context
         $this->routeContextSwitcher->reset();
