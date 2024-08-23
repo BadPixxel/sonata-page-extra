@@ -16,6 +16,7 @@ namespace BadPixxel\SonataPageExtra\Admin\Extensions;
 use BadPixxel\SonataPageExtra\Form\Type\SeoMetadataType;
 use BadPixxel\SonataPageExtra\Interfaces\SeoAwarePageInterface;
 use Sonata\AdminBundle\Admin\AbstractAdminExtension;
+use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Form\Type\CollectionType;
@@ -37,6 +38,7 @@ class SeoAwarePageAdminExtension extends AbstractAdminExtension
         if (!$this->isSeoAwarePageSubject($list->getAdmin()->getModelClass())) {
             return;
         }
+
         //==============================================================================
         // Add Indexed Status Flag
         $list->add('indexed', null, array(
@@ -44,6 +46,19 @@ class SeoAwarePageAdminExtension extends AbstractAdminExtension
             'translation_domain' => 'SonataPageExtra',
             'editable' => true
         ));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function configureDatagridFilters(DatagridMapper $filter): void
+    {
+        $filter
+            ->add('indexed', null, array(
+                'label' => 'Indexed',
+                'show_filter' => true,
+            ))
+        ;
     }
 
     /**
