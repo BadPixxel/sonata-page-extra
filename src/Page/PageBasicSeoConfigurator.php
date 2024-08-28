@@ -65,14 +65,17 @@ class PageBasicSeoConfigurator implements PageConfiguratorInterface
      */
     private function configureTitle(PageInterface $page): void
     {
-        static $dfTitle;
+        static $dfTitles;
         Assert::notEmpty($this->seoPage);
         //==============================================================================
-        // Get Default Page Title
-        $dfTitle ??= $this->config["title"] ?? null;
+        // Get Default Page Titles
+        $dfTitles ??= array_filter(array(
+            $this->config["title"] ?? null,
+            $page->getSite()?->getTitle()
+        ));
         //==============================================================================
         // Page Title Already Updated (ie. by Controller)
-        if ($dfTitle && ($dfTitle !== $this->seoPage->getTitle())) {
+        if (!in_array($this->seoPage->getTitle(), $dfTitles, true)) {
             return;
         }
         //==============================================================================
