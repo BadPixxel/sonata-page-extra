@@ -142,7 +142,7 @@ class LocalesManager
             //==============================================================================
             // Add Localized Site Url if no Exists
             if (!isset($langAlternates[$localeUrl])) {
-                $langAlternates[$localeUrl] = $locale;
+                $langAlternates[$localeUrl] = $site->getIsDefault() ? "x-default" : $locale;
             }
         }
 
