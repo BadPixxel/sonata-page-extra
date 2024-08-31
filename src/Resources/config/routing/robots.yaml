@@ -1,0 +1,4 @@
+
+badpixxel_sonata_extras_robots:
+    path:         /robots.txt
+    controller:   BadPixxel\SonataPageExtra\Actions\Robots

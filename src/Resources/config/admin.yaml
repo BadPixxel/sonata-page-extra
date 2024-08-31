@@ -8,6 +8,14 @@ services:
         autowire:         true
         autoconfigure:    true
 
+    ############################################################################
+    # Sonata Seo Aware Site Admin Extension
+    BadPixxel\SonataPageExtra\Admin\Extensions\SeoAwareSiteAdminExtension:
+        tags:
+            - {
+                name: sonata.admin.extension,
+                target: sonata.page.admin.site,
+            }
 
     ############################################################################
     # Sonata Seo Aware Page Admin Extension

@@ -1,5 +1,19 @@
 
 admin:
+    site:
+        robotsExtra:
+            label: "Site Additional Robots.txt Contents"
+            help: "Register Raw Contents for Robot.txt File"
+        metaExtra:
+            label: "Site Additional Metadata"
+            help: "Register extra Metadata for Site Seo"
+            type:
+                label: "Metadata Type"
+            name:
+                label: "Name"
+            value:
+                label: "Value"
+
     page:
         indexed:
             label:    "Indexed"
