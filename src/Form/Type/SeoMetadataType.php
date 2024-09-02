@@ -47,8 +47,8 @@ class SeoMetadataType extends AbstractType
             'label' => 'admin.page.metaExtra.type.label',
             'required' => true,
             'choices' => array_combine(
+                array_map(fn ($value) => ucfirst($value), self::$types),
                 self::$types,
-                array_map(fn ($value) => ucfirst($value), self::$types)
             ),
             'translation_domain' => 'SonataPageExtra',
         ));
