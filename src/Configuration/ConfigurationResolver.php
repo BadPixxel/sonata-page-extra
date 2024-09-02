@@ -76,6 +76,10 @@ class ConfigurationResolver
             // Resolve Main Configuration
             $siteConfig = $this->resolver->resolve($siteConfiguration);
             //==============================================================================
+            // Resolve Autoload from Main Configuration
+            $siteConfig["autoload"] ??= $mainConfig["autoload"] ?? null;
+            $siteConfig["translation_domain"] ??= $mainConfig["translation_domain"] ?? null;
+            //==============================================================================
             // Autoload config from Translations
             if ($siteConfig["autoload"]) {
                 $siteConfig = $this->autoloadFromTranslations($site, $siteConfig);
