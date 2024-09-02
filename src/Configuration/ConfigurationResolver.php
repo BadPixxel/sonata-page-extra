@@ -112,7 +112,7 @@ class ConfigurationResolver
     public function autoloadFromTranslations(SiteInterface $site, array $config): array
     {
         Assert::string($config["autoload"]);
-        Assert::string($domain = $config["translation_domain"]);
+        Assert::string($domain = $config["translation_domain"] ?? "messages");
         Assert::notEmpty($locale = $site->getLocale());
         //====================================================================//
         // Get Translator Catalogue
@@ -182,7 +182,7 @@ class ConfigurationResolver
                 "indexed" => null,
                 "redirections" => null,
 
-                "translation_domain" => "messages",
+                "translation_domain" => null,
                 "sites" => array(),
             ))
             ->addAllowedTypes("autoload", array('null', 'string'))
@@ -206,7 +206,7 @@ class ConfigurationResolver
             ->addAllowedTypes("indexed", array('null', 'boolean'))
             ->addAllowedTypes("redirections", array('null', "array"))
 
-            ->addAllowedTypes("translation_domain", 'string')
+            ->addAllowedTypes("translation_domain", array('null', 'string'))
             ->addAllowedTypes("sites", "array")
         ;
 
