@@ -17,6 +17,7 @@ use BadPixxel\SonataPageExtra\Services\SitemapsPathBuilder;
 use BadPixxel\SonataPageExtra\Services\WebsiteManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Webmozart\Assert\Assert;
 
@@ -31,11 +32,23 @@ class Sitemap extends AbstractController
     ) {
     }
 
-    public function __invoke(): Response
+    public function __invoke(Request $request): Response
     {
         //==============================================================================
+        // Check if Sonata Page Site Selected
+        $site = $this->hostsManager->getCurrentSite();
+        //==============================================================================
+        // Search for First Site with This Host
+        if (!$site) {
+            foreach ($this->hostsManager->getAvailableSites() as $availableSite) {
+                if ($request->getHost() === $availableSite->getHost()) {
+                    $site = $availableSite;
+                }
+            }
+        }
+        //==============================================================================
         // Ensure Sonata Page Site Selected
-        Assert::notEmpty($site = $this->hostsManager->getCurrentSite());
+        Assert::notEmpty($site);
         //==============================================================================
         // Ensure Host Sitemap Storage path Exists
         Assert::readable($path = $this->pathBuilder->getFinalAbsolutePath($site->getHost()));

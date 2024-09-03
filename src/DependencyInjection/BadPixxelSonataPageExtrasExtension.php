@@ -14,6 +14,7 @@
 namespace BadPixxel\SonataPageExtra\DependencyInjection;
 
 use BadPixxel\SonataPageExtra\Entity;
+use BadPixxel\SonataPageExtra\Page\BadPixxelPageService;
 use Exception;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -62,6 +63,7 @@ class BadPixxelSonataPageExtrasExtension extends Extension implements PrependExt
                 'block' => Entity\Block::class,
                 'snapshot' => Entity\Snapshot::class,
             ),
+            'default_page_service' => BadPixxelPageService::class,
             'ignore_route_patterns' => array(
                 '^(.*)Redirect(.*)'
             ),

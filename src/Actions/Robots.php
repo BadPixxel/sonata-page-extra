@@ -38,9 +38,11 @@ class Robots extends AbstractController
         $site = $this->hostsManager->getCurrentSite();
         //==============================================================================
         // Search for First Site with This Host
-        foreach ($this->hostsManager->getAvailableSites() as $availableSite) {
-            if ($request->getHost() === $availableSite->getHost()) {
-                $site = $availableSite;
+        if (!$site) {
+            foreach ($this->hostsManager->getAvailableSites() as $availableSite) {
+                if ($request->getHost() === $availableSite->getHost()) {
+                    $site = $availableSite;
+                }
             }
         }
         //==============================================================================
