@@ -15,6 +15,7 @@ namespace BadPixxel\SonataPageExtra\Page;
 
 use BadPixxel\SonataPageExtra\Interfaces\PageConfiguratorInterface;
 use Sonata\PageBundle\Model\PageInterface;
+use Sonata\PageBundle\Model\SnapshotPageProxy;
 use Sonata\PageBundle\Page\Service\BasePageService;
 use Sonata\PageBundle\Page\TemplateManagerInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
@@ -54,13 +55,15 @@ class BadPixxelPageService extends BasePageService
         Response $response = null
     ): Response {
         //==============================================================================
+        // Detect Snapshot Page
+        $realPage = $this->getPage($page);
+        //==============================================================================
         // Execute Page Configurators
         foreach ($this->configurators as $configurator) {
             Assert::isInstanceOf($configurator, PageConfiguratorInterface::class);
-
-            if ($configurator->handle($page)) {
+            if ($configurator->handle($realPage)) {
                 Assert::true(
-                    $configurator->configure($page, $request, $parameters)
+                    $configurator->configure($realPage, $request, $parameters)
                 );
             }
         }
@@ -70,5 +73,26 @@ class BadPixxelPageService extends BasePageService
             $parameters,
             $response
         );
+    }
+
+    /**
+     * Detect Page Snapshots to Extract real Sonata Page
+     */
+    private function getPage(PageInterface $page): PageInterface
+    {
+        static $reflexionMethod;
+        //==============================================================================
+        // Detect Snapshot Page
+        if (!$page instanceof SnapshotPageProxy) {
+            return $page;
+        }
+        //==============================================================================
+        // Detect Snapshot Page
+        if (!isset($reflexionMethod)) {
+            $reflexionMethod = new \ReflectionMethod(SnapshotPageProxy::class, 'getPage');
+            $reflexionMethod->setAccessible(true);
+        }
+
+        return $reflexionMethod->invoke($page);
     }
 }

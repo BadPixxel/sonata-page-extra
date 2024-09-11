@@ -39,6 +39,7 @@ class PageIndexingConfigurator implements PageConfiguratorInterface
      * Page Configurator Constructor.
      */
     public function __construct(
+        private readonly array $config = array(),
         private readonly ?SeoPageInterface $seoPage = null,
     ) {
     }
