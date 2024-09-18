@@ -15,7 +15,8 @@ namespace BadPixxel\SonataPageExtra\Phpunit;
 
 use Sonata\PageBundle\Request\SiteRequest;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Component\BrowserKit\Request;
+use Symfony\Component\BrowserKit\Request as BrowserKitRequest;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Client simulates a browser and makes requests to an HttpKernel instance.
@@ -26,12 +27,19 @@ class HttpSiteBrowser extends KernelBrowser
     /**
      * Converts the BrowserKit request to a Sonata Site Request.
      *
-     * @param Request $request
+     * @param BrowserKitRequest $request
      *
      * @return SiteRequest Sonata Site Request instance
      */
-    protected function filterRequest(Request $request): SiteRequest
+    protected function filterRequest(BrowserKitRequest $request): SiteRequest
     {
+        static $configured;
+        //==============================================================================
+        // Ensure Configuration of Factory in case of Sub-Requests
+        $configured ??= $this->configureFactory();
+
+        //==============================================================================
+        // Convert Native Request to Sonata Site Request
         return SiteRequest::create(
             $request->getUri(),
             $request->getMethod(),
@@ -41,5 +49,28 @@ class HttpSiteBrowser extends KernelBrowser
             $request->getServer(),
             $request->getContent()
         );
+    }
+
+    /**
+     * Configure Request Factory.
+     */
+    protected function configureFactory(): bool
+    {
+        Request::setFactory(
+            /**
+             * @param null|resource|string $content
+             */
+            static fn (
+                array $query = array(),
+                array $request = array(),
+                array $attributes = array(),
+                array $cookies = array(),
+                array $files = array(),
+                array $server = array(),
+                $content = null
+            ) => new SiteRequest($query, $request, $attributes, $cookies, $files, $server, $content)
+        );
+
+        return true;
     }
 }
