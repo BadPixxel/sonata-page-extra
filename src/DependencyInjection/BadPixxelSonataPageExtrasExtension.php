@@ -40,7 +40,12 @@ class BadPixxelSonataPageExtrasExtension extends Extension implements PrependExt
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        Assert::string($env = $container->getParameter("kernel.environment"));
+        $loader = new Loader\YamlFileLoader(
+            $container,
+            new FileLocator(__DIR__.'/../Resources/config'),
+            $env
+        );
         $loader->load('services.yaml');
         $loader->load('admin.yaml');
 

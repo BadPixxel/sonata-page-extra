@@ -44,3 +44,14 @@ services:
     # AutoWire for Twig Extensions
     BadPixxel\SonataPageExtra\Twig\:
         resource:   '../../Twig'
+
+when@test:
+    services:
+        _defaults:
+            autowire: true
+            autoconfigure: true
+
+        test.client:
+            class:  BadPixxel\SonataPageExtra\Phpunit\HttpSiteBrowser
+            public: true
+
