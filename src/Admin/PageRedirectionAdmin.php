@@ -16,13 +16,20 @@ namespace BadPixxel\SonataPageExtra\Admin;
 use BadPixxel\SonataPageExtra\Dictionary\RedirectTypes;
 use BadPixxel\SonataPageExtra\Entity\PageRedirection;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
+use Sonata\AdminBundle\DependencyInjection\Admin\TaggedAdminInterface;
 use Sonata\AdminBundle\Form\FormMapper;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 /**
  * Sonata Page Redirections Admin Class.
  */
+#[AutoconfigureTag(TaggedAdminInterface::ADMIN_TAG, array(
+    'manager_type' => "orm",
+    'show_in_dashboard' => false,
+    'model_class' => PageRedirection::class
+))]
 class PageRedirectionAdmin extends AbstractAdmin
 {
     /**

@@ -37,11 +37,4 @@ services:
 
     ############################################################################
     # Posts Redirections Admin
-    BadPixxel\SonataPageExtra\Admin\PageRedirectionAdmin:
-        tags:
-            - {
-                name:               sonata.admin,
-                manager_type:       orm,
-#                show_in_dashboard:  false,
-                model_class:        BadPixxel\SonataPageExtra\Entity\PageRedirection
-            }
+    BadPixxel\SonataPageExtra\Admin\PageRedirectionAdmin: ~
