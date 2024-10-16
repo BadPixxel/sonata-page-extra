@@ -147,7 +147,15 @@ class PageConfigurator
         //====================================================================//
         // Walk on Redirections
         $doneRedirections = array();
-        foreach ($redirections as $code => $uri) {
+        foreach ($redirections as $uri => $code) {
+            //====================================================================//
+            // Safety Check
+            Assert::stringNotEmpty($uri, "Redirect url is invalid");
+            Assert::inArray(
+                $code,
+                RedirectTypes::ALL,
+                sprintf('%s Redirection code not allowed', $code)
+            );
             //====================================================================//
             // Ensure Redirection Exists
             if (!$redirection = $page->getRedirectionByUri($uri)) {
