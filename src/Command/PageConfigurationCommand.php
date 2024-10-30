@@ -65,7 +65,6 @@ class PageConfigurationCommand extends Command
         // Create Results Table
         $table = new Table($output->section());
         $table->setHeaders(array('Site', 'ID', 'Url', 'Status', 'Error'));
-        $table->render();
         //==============================================================================
         // Walk on Available Websites
         foreach ($this->websiteManager->getAvailableSites() as $site) {
@@ -81,6 +80,7 @@ class PageConfigurationCommand extends Command
                 }
             }
         }
+        $table->render();
 
         return Command::SUCCESS;
     }
@@ -143,15 +143,15 @@ class PageConfigurationCommand extends Command
     protected function appendResult(Table $table, Site $site, ?Page $page, ?string $error = null): void
     {
         if (!$page) {
-            $table->appendRow(
+            $table->addRow(
                 array($site->getName(), $error, "N/A", "<comment>SKIP</comment>", "Empty or Excluded")
             );
         } elseif ($error) {
-            $table->appendRow(
+            $table->addRow(
                 array($site->getName(), $page->getId(), $page->getUrl(), "<error> KO </error>", $error)
             );
         } else {
-            $table->appendRow(
+            $table->addRow(
                 array($site->getName(), $page->getId(), $page->getUrl(), "<info> OK </info>")
             );
         }
